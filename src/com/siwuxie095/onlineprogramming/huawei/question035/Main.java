@@ -3,98 +3,85 @@ package com.siwuxie095.onlineprogramming.huawei.question035;
 import java.util.Scanner;
 
 /**
- * 字符串加密
+ * 蛇形矩阵
  *
  * 题目描述
- * 有一种技巧可以对数据进行加密，它使用一个单词作为它的密匙。下面是它的工作原理：首先，
- * 选择一个单词作为密匙，如TRAILBLAZERS。如果单词中包含有重复的字母，只保留第1个，
- * 其余几个丢弃。现在，修改过的那个单词属于字母表的下面，如下所示：
+ * 题目说明
+ * 蛇形矩阵是由1开始的自然数依次排列成的一个矩阵上三角形。
  *
- * A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
- * T R A I L B Z E S C D F G H J K M N O P Q U V W X Y
+ * 样例输入
+ * 5
  *
- * 上面其他用字母表中剩余的字母填充完整。在对信息进行加密时，信息中的每个字母被固定于
- * 顶上那行，并用下面那行的对应字母一一取代原文的字母(字母字符的大小写状态应该保留)。
- * 因此，使用这个密匙，Attack AT DAWN(黎明时攻击)就会被加密为Tpptad TP ITVH。
+ * 样例输出
+ * 1 3 6 10 15
+ * 2 5 9 14
+ * 4 8 13
+ * 7 12
+ * 11
  *
- * 请实现下述接口，通过指定的密匙和明文得到密文。
- * 详细描述：
  * 接口说明
- * 原型：
- * void encrypt(char * key,char * data,char * encrypt);
- *
+ * 原型
+ * void GetResult(int Num, char * pResult);
  * 输入参数：
- * char * key：密匙
- * char * data：明文
- *
+ *         int Num：输入的正整数N
  * 输出参数：
- * char * encrypt：密文
- *
+ *         int * pResult：指向存放蛇形矩阵的字符串指针
+ *         指针指向的内存区域保证有效
  * 返回值：
- * void
+ *         void
  *
  *
  * 输入描述:
- * 先输入key和要加密的字符串
+ * 输入正整数N（N不大于100）
  *
  * 输出描述:
- * 返回加密后的字符串
+ * 输出一个N行的蛇形矩阵。
  *
  *
  * 示例1
  *
  * 输入
- * nihao
- * ni
+ * 4
  *
  * 输出
- * le
+ * 1 3 6 10
+ * 2 5 9
+ * 4 8
+ * 7
  *
  * @author Jiajing Li
- * @date 2020-02-12 09:54:11
+ * @date 2020-02-10 12:18:37
  */
 public class Main {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNext()) {
-            String key = scanner.nextLine();
-            String data = scanner.nextLine();
-            String template = "abcdefghijklmnopqrstuvwxyz";
-            key = getNewKey(key, template);
-            System.out.println(encrypt(key, template, data));
-        }
-    }
-
-    private static String getNewKey(String key, String template) {
-        StringBuilder res = new StringBuilder();
-        // distinct
-        for (char ch : key.toCharArray()) {
-            if (res.toString().indexOf(ch) < 0) {
-                res.append(Character.toLowerCase(ch));
+            int num = scanner.nextInt();
+            int[][] snakeArr = new int[num][num];
+            int min = 1;
+            int row = 0;
+            int col = 0;
+            while (row < num) {
+                snakeArr[row][col] = min++;
+                if (row == 0) {
+                    row = col + 1;
+                    col = 0;
+                } else {
+                    row--;
+                    col++;
+                }
+            }
+            for (int i = 0; i < snakeArr.length; i++) {
+                for (int j = 0; j < snakeArr[0].length; j++) {
+                    if (snakeArr[i][j] == 0) {
+                        continue;
+                    }
+                    System.out.print(snakeArr[i][j] + " ");
+                }
+                System.out.println();
             }
         }
-        // replenish
-        for (char ch : template.toCharArray()) {
-            if (res.toString().indexOf(ch) < 0) {
-                res.append(Character.toLowerCase(ch));
-            }
-        }
-        return res.toString();
-    }
-
-
-    private static String encrypt(String key, String template, String data) {
-        StringBuilder res = new StringBuilder();
-        for (char ch : data.toCharArray()) {
-            if (Character.isUpperCase(ch)) {
-                char lowerCaseCh = Character.toLowerCase(ch);
-                res.append(Character.toUpperCase(key.charAt(template.indexOf(lowerCaseCh))));
-            } else {
-                res.append(key.charAt(template.indexOf(ch)));
-            }
-        }
-        return res.toString();
     }
 
 }

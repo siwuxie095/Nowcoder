@@ -3,111 +3,83 @@ package com.siwuxie095.onlineprogramming.huawei.question032;
 import java.util.Scanner;
 
 /**
- * 整数与IP地址间的转换
+ * 密码截取
  *
  * 题目描述
- * 原理：ip地址的每段可以看成是一个0-255的整数，把每段拆分成一个二进制形式组合起来，
- * 然后把这个二进制数转变成一个长整数。
- * 举例：一个ip地址为10.0.3.193
- * 每段数字             相对应的二进制数
- * 10                   00001010
- * 0                    00000000
- * 3                    00000011
- * 193                  11000001
- * 组合起来即为：00001010 00000000 00000011 11000001,转换为10进制数就是：167773121，
- * 即该IP地址转换后的数字就是它了。
+ * Catcher是MCA国的情报员，他工作时发现敌国会用一些对称的密码进行通信，
+ * 比如像这些ABBA，ABA，A，123321，但是他们有时会在开始或结束时加入一
+ * 些无关的字符以防止别国破解。比如进行下列变化 ABBA->12ABBA,ABA->ABAKK,
+ * 123321->51233214　。因为截获的串太长了，而且存在多种可能的情况
+ * （abaaab可看作是aba,或baaab的加密形式），Cathcer的工作量实在是太大了，
+ * 他只能向电脑高手求助，你能帮Catcher找出最长的有效密码串吗？
  *
  * 输入描述:
- * 输入
- * 1 输入IP地址
- * 2 输入10进制型的IP地址
+ * 输入一个字符串
  *
  * 输出描述:
- * 输出
- * 1 输出转换成10进制的IP地址
- * 2 输出转换后的IP地址
+ * 返回有效密码串的最大长度
  *
  *
  * 示例1
  *
  * 输入
- * 10.0.3.193
- * 167969729
+ * ABBA
  *
  * 输出
- * 167773121
- * 10.3.3.193
+ * 4
  *
  * @author Jiajing Li
- * @date 2020-02-09 12:08:14
+ * @date 2020-02-09 11:56:03
  */
 public class Main {
 
     public static void main(String[] args) {
+        /*
+         * Using Manacher Algorithm to get longest common palindromic substring
+         */
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNext()) {
-            String ip = scanner.nextLine();
-            String decimal = scanner.nextLine();
-            System.out.println(convertIpToDecimal(ip));
-            System.out.println(convertDecimalToIp(decimal));
+            String input = scanner.nextLine();
+            System.out.println(maxLcpsLength(input));
         }
     }
 
-
-    private static String convertIpToDecimal(String ip) {
-        String[] arr = ip.split("\\.");
-        StringBuilder builder = new StringBuilder();
-        for (String val : arr) {
-            String binary = Integer.toBinaryString(Integer.parseInt(val));
-            builder.append(replenish(binary, 8));
+    private static int maxLcpsLength(String str) {
+        if (null == str || str.length() == 0) {
+            return 0;
         }
-        return toDecimalString(builder.toString());
+        char[] charArr = manacherString(str);
+        int[] pArr = new int[charArr.length];
+        int index = -1;
+        int pR = -1;
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i != charArr.length; i++) {
+            pArr[i] = pR > i ? Math.min(pArr[2 * index - i], pR - i) : 1;
+            while (i + pArr[i] < charArr.length && i - pArr[i] > -1) {
+                if (charArr[i + pArr[i]] == charArr[i - pArr[i]]) {
+                    pArr[i]++;
+                } else {
+                    break;
+                }
+            }
+            if (i + pArr[i] > pR) {
+                pR = i + pArr[i];
+                index = i;
+            }
+            max = Math.max(max, pArr[i]);
+        }
+        return max - 1;
     }
 
-    private static String replenish(String binary, int length) {
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < length; i++) {
-            builder.append("0");
+    private static char[] manacherString(String str) {
+        char[] charArr = str.toCharArray();
+        char[] res = new char[str.length() * 2 + 1];
+        int index = 0;
+        for (int i = 0; i != res.length; i++) {
+            res[i] = (i & 1) == 0 ? '#' : charArr[index++];
         }
-        String total = builder.toString();
-        if (binary.length() > length) {
-            return total;
-        }
-        char[] totalChArr = total.toCharArray();
-        int index = totalChArr.length - 1;
-        char[] binaryChArr = binary.toCharArray();
-        for (int i = binaryChArr.length - 1; i >= 0; i--) {
-            totalChArr[index--] = binaryChArr[i];
-        }
-        return new String(totalChArr);
+        return res;
     }
 
-    private static String toDecimalString(String binary) {
-        char[] arr = binary.toCharArray();
-        int res = 0;
-        int base = 2;
-        int raised = binary.length() - 1;
-        for (char ch : arr) {
-            int val = Integer.parseInt(new String(new char[] {ch}));
-            res += ((int) Math.pow(base, raised)) * val;
-            raised--;
-        }
-        return String.valueOf(res);
-    }
-
-    private static String convertDecimalToIp(String decimal) {
-        String binary = Integer.toBinaryString(Integer.parseInt(decimal));
-        binary = replenish(binary, 32);
-
-        StringBuilder builder = new StringBuilder();
-        builder.append(toDecimalString(binary.substring(0, 8)));
-        builder.append(".");
-        builder.append(toDecimalString(binary.substring(8, 16)));
-        builder.append(".");
-        builder.append(toDecimalString(binary.substring(16, 24)));
-        builder.append(".");
-        builder.append(toDecimalString(binary.substring(24, 32)));
-        return builder.toString();
-    }
 
 }

@@ -1,64 +1,71 @@
 package com.siwuxie095.onlineprogramming.huawei.question037;
 
-import java.math.BigDecimal;
 import java.util.Scanner;
 
 /**
- * 求小球落地 5 次后所经历的路程和第 5 次反弹的高度
+ * 统计每个月兔子的总数
  *
  * 题目描述
- * 假设一个球从任意高度自由落下，每次落地后反跳回原高度的一半; 再落下,
- * 求它在第 5 次落地时，共经历多少米?第 5 次反弹多高？
+ * 有一只兔子，从出生后第3个月起每个月都生一只兔子，小兔子长到第三个月后每个月又生一只兔子，
+ * 假如兔子都不死，问每个月的兔子总数为多少？
  *
  * 输入描述:
- * 输入起始高度，int 型
+ * 输入int型表示 month
  *
  * 输出描述:
- * 分别输出第 5 次落地时，共经过多少米第 5 次反弹多高
+ * 输出兔子总数int型
  *
  *
  * 示例1
  *
  * 输入
- * 1
+ * 9
  *
  * 输出
- * 2.875
- * 0.03125
+ * 34
  *
  * @author Jiajing Li
- * @date 2020-02-12 15:13:24
+ * @date 2020-02-12 14:23:10
  */
 public class Main {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNext()) {
-            int initHeight = scanner.nextInt();
-            System.out.println(getAllDistance(new BigDecimal(initHeight), 5));
-            System.out.println(getReboundHeight(new BigDecimal(initHeight), 5));
+            int month = scanner.nextInt();
+            System.out.println(getTotalCountIteratively(month));
         }
     }
 
-    private static String getAllDistance(BigDecimal initHeight, int times) {
-        if (times == 1) {
-            return initHeight.toString();
+    /**
+     * Recursive method.
+     */
+    private static int getTotalCountRecursively(int month) {
+        if (month == 1 || month == 2) {
+            return 1;
         }
-        if (times == 2) {
-            return initHeight.multiply(new BigDecimal(2)).toString();
-        }
-        BigDecimal res = initHeight.multiply(new BigDecimal(2));
-        for (int i = 3; i <= times; i++) {
-            // res += initHeight / (2 ^ (i - 2))
-            res = res.add(initHeight.divide(new BigDecimal((int) Math.pow(2, i - 2))));
-        }
-        return res.toString();
+        return getTotalCountRecursively(month - 1) + getTotalCountRecursively(month - 2);
     }
 
-    private static String getReboundHeight(BigDecimal initHeight, int times) {
-        return initHeight.divide(new BigDecimal((int) Math.pow(2, times))).toString();
+    /**
+     * Iterative method.
+     */
+    private static int getTotalCountIteratively(int month) {
+        if (month < 1) {
+            return 0;
+        }
+        if (month == 1 || month == 2) {
+            return 1;
+        }
+        int res = 0;
+        int pre = 1;
+        int prepre = 1;
+        for (int i = 3; i <= month; ++i) {
+            res = pre + prepre;
+            prepre = pre;
+            pre = res;
+        }
+        return res;
     }
-
-
 
 }
