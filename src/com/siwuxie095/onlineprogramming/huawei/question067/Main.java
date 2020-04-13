@@ -34,27 +34,42 @@ import java.util.Scanner;
  */
 public class Main {
 
+    private static final int LENGTH = 4;
+    private static final int TARGET = 24;
+
     public static void main(String[] args) {
-        List<String> list = new ArrayList<>();
-        list.add("+");
-        list.add("-");
-        list.add("*");
-        list.add("/");
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNext()) {
-            int first = scanner.nextInt();
-            int second = scanner.nextInt();
-            int third = scanner.nextInt();
-            int fourth = scanner.nextInt();
+            int[] arr = new int[LENGTH];
+            for (int i = 0; i < LENGTH; i++) {
+                arr[i] = scanner.nextInt();
+            }
 
             boolean flag = false;
-            for (String pos1 : list) {
-                for (String pos2 : list) {
-                    for (String pos3 : list) {
-                        String expression = first + pos1 + second + pos2 + third + pos3 + fourth;
-                        if (judge(expression)) {
-                            flag = true;
-                            break;
+            for (int i = 0; i < LENGTH; i++) {
+                for (int j = 0; j < LENGTH; j++) {
+                    if (j == i) {
+                        continue;
+                    }
+                    for (int k = 0; k < LENGTH; k++) {
+                        if (k == i || k == j) {
+                            continue;
+                        }
+                        for (int l = 0; l < LENGTH; l++) {
+                            if (l == i || l == j || l == k) {
+                                continue;
+                            }
+                            int[] num = new int[LENGTH];
+                            num[0] = arr[i];
+                            num[1] = arr[j];
+                            num[2] = arr[k];
+                            num[3] = arr[l];
+                            int[] used = new int[LENGTH];
+                            double res = 0.0D;
+                            if (judge(num, used, res)) {
+                                flag = true;
+                                break;
+                            }
                         }
                     }
                 }
@@ -63,76 +78,20 @@ public class Main {
         }
     }
 
-    private static boolean judge(String expr) {
-        // only one negative number.
-        if (expr.contains("-")) {
-            if (!expr.contains("*") && !expr.contains("/") && !expr.contains("+")) {
-                if (expr.indexOf("-") == expr.lastIndexOf("-")) {
-                    return false;
+    private static boolean judge(int[] num, int[] used, double res) {
+        for (int i = 0; i < num.length; i++) {
+            if (used[i] == 0) {
+                used[i] = 1;
+                if (judge(num, used, res + num[i])
+                        || judge(num, used, res - num[i])
+                        || judge(num, used, res * num[i])
+                        || judge(num, used, res / num[i])) {
+                    return true;
                 }
+                used[i] = 0;
             }
         }
-        int index;
-        if ((index = expr.indexOf("*")) != -1) {
-            expr = calculate(expr, index, "*");
-            return judge(expr);
-        } else if ((index = expr.indexOf("/")) != -1) {
-            expr = calculate(expr, index, "/");
-            return judge(expr);
-        } else if ((index = expr.indexOf("+")) != -1) {
-            expr = calculate(expr, index, "+");
-            return judge(expr);
-        } else if ((index = expr.indexOf("-")) != -1) {
-            expr = calculate(expr, index, "-");
-            return judge(expr);
-        }
-        return Integer.parseInt(expr) == 24;
-    }
-
-    private static String calculate(String expr, int index, String operator) {
-        char[] arr = expr.toCharArray();
-        boolean flag = true;
-
-        StringBuilder firstBuilder = new StringBuilder();
-        int first;
-        StringBuilder before = new StringBuilder();
-        for (int i = index - 1; i >= 0; i--) {
-            if (Character.isDigit(arr[i]) && flag) {
-                firstBuilder.append(arr[i]);
-            } else {
-                flag = false;
-                before.append(arr[i]);
-            }
-        }
-        first = Integer.parseInt(firstBuilder.reverse().toString());
-
-        flag = true;
-        StringBuilder secondBuilder = new StringBuilder();
-        int second;
-        StringBuilder after = new StringBuilder();
-        for (int i = index + 1; i < arr.length; i++) {
-            if (Character.isDigit(arr[i]) && flag) {
-                secondBuilder.append(arr[i]);
-            } else {
-                flag = false;
-                after.append(arr[i]);
-            }
-        }
-        second = Integer.parseInt(secondBuilder.toString());
-
-        int res = 0;
-        if ("*".equals(operator)) {
-            res = first * second;
-        } else if ("/".equals(operator)) {
-            res = first / second;
-        } else if ("+".equals(operator)) {
-            res = first + second;
-        } else if ("-".equals(operator)) {
-            res = first - second;
-        }
-
-
-        return before.reverse().toString() + String.valueOf(res) + after.toString();
+        return res == TARGET;
     }
 
 }
