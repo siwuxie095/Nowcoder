@@ -32,7 +32,11 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
+        normalMethod();
+        //betterMethod();
+    }
 
+    private static void normalMethod() {
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNext()) {
             int val = scanner.nextInt();
@@ -54,6 +58,19 @@ public class Main {
                 }
             }
             System.out.println(serialCount);
+        }
+    }
+
+    private static void betterMethod() {
+        Scanner scanner = new Scanner(System.in);
+        // val 变为 0 的次数，取决于 val 中连续 1 的个数
+        while (scanner.hasNext()) {
+            int val = scanner.nextInt();
+            int count = 0;
+            for (; val != 0; count++) {
+                val = val & (val << 1);
+            }
+            System.out.println(count);
         }
     }
 
