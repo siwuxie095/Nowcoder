@@ -21,6 +21,7 @@ package com.siwuxie095.onlineprogramming.swordtooffer.question006;
  * @author Jiajing Li
  * @date 2021-03-31 09:53:04
  */
+@SuppressWarnings("all")
 public class Solution {
 
     public int minNumberInRotateArray(int [] array) {
