@@ -8,7 +8,12 @@ package com.siwuxie095.onlineprogramming.swordtooffer.question065;
 public class Main {
 
     public static void main(String[] args) {
-
+        Solution solution = new Solution();
+        char[][] matrix = new char[][] {{'a', 'b', 'c', 'e'},
+                {'s', 'f', 'c', 's'},
+                {'a', 'd', 'e', 'e'}};
+        System.out.println(solution.hasPath(matrix, "abcced"));
+        System.out.println(solution.hasPath(matrix, "abcb"));
     }
 
 }
